@@ -30,17 +30,17 @@ plan:
 - phase: Core Refactor
   tasks:
   - text: Rewrite LocalStore to use raw IndexedDB API (open, onupgradeneeded, get, put, delete, getAll, clear)
-    done: false
+    done: true
   - text: Implement bulkPut using a single readwrite transaction with multiple put calls
-    done: false
+    done: true
   - text: Verify all 12 existing LocalStore tests pass unchanged
-    done: false
+    done: true
 - phase: Cleanup & Docs
   tasks:
   - text: Remove dexie from peerDependencies in package.json and from node_modules
-    done: false
+    done: true
   - text: Update README install instruction (remove dexie) and any Dexie references in docs
-    done: false
+    done: true
   - text: Run full test suite and typecheck to verify no regressions
-    done: false
+    done: true
 extra: {}
