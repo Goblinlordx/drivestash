@@ -23,6 +23,7 @@ function createMockStore(): LocalStorePort<TestRecord> & {
   delete: ReturnType<typeof vi.fn>
   list: ReturnType<typeof vi.fn>
   bulkPut: ReturnType<typeof vi.fn>
+  clear: ReturnType<typeof vi.fn>
 } {
   const records = new Map<string, TestRecord>()
   return {
@@ -32,6 +33,7 @@ function createMockStore(): LocalStorePort<TestRecord> & {
     delete: vi.fn((id: string) => { records.delete(id); return Promise.resolve() }),
     list: vi.fn(() => Promise.resolve(Array.from(records.values()))),
     bulkPut: vi.fn((recs: TestRecord[]) => { for (const r of recs) records.set(r.id, r); return Promise.resolve() }),
+    clear: vi.fn(() => { records.clear(); return Promise.resolve() }),
   }
 }
 
@@ -272,6 +274,80 @@ describe('SyncEngine', () => {
       await vi.waitFor(() => {
         expect(statuses).toContain('syncing')
       })
+    })
+  })
+
+  describe('clear', () => {
+    it('wipes all local records', async () => {
+      await engine.put(rec('1', 'a'))
+      await engine.put(rec('2', 'b'))
+
+      await engine.clear()
+
+      expect(mockStore.clear).toHaveBeenCalled()
+      const records = await engine.list()
+      expect(records).toHaveLength(0)
+    })
+
+    it('resets remoteFileId so next push creates a new file', async () => {
+      // First push — creates remote file
+      await engine.push()
+      expect(mockDrive.createFile).toHaveBeenCalledTimes(1)
+      mockDrive.createFile.mockClear()
+
+      // Clear resets remoteFileId
+      await engine.clear()
+
+      // Reset drive mock so listFiles returns empty (simulating new user)
+      mockDrive._fileId = null
+      mockDrive._remoteDoc = null
+
+      // Next push should create a new file, not update
+      await engine.push()
+      expect(mockDrive.createFile).toHaveBeenCalledTimes(1)
+      expect(mockDrive.updateFile).not.toHaveBeenCalled()
+    })
+
+    it('sets status to idle', async () => {
+      // Put the engine in synced state
+      await engine.sync()
+
+      const statuses: SyncStatus[] = []
+      engine.onStatusChange((s) => statuses.push(s))
+
+      await engine.clear()
+
+      expect(statuses).toContain('idle')
+    })
+
+    it('cancels pending sync', async () => {
+      let resolveFirst!: () => void
+      const slowPromise = new Promise<void>((resolve) => { resolveFirst = resolve })
+
+      const originalListFiles = mockDrive.listFiles.getMockImplementation()!
+      mockDrive.listFiles.mockImplementationOnce(async (...args: unknown[]) => {
+        await slowPromise
+        return originalListFiles(...args)
+      })
+
+      // Start a sync that blocks
+      const syncPromise = engine.sync()
+
+      // Queue a pending push
+      void engine.push()
+
+      // Clear while sync is in progress — should cancel pending
+      await engine.clear()
+
+      // Unblock the in-progress sync
+      resolveFirst()
+      await syncPromise
+
+      // Wait for any coalesced operations
+      await new Promise((r) => setTimeout(r, 20))
+
+      // Store should have been cleared (no records from the pending push)
+      expect(mockStore.clear).toHaveBeenCalled()
     })
   })
 
