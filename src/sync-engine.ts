@@ -4,6 +4,23 @@ import { DriveAdapter } from './drive-adapter'
 import { lwwMerge } from './merge'
 import type { MergeFn } from './merge'
 
+/** Minimal interface for the local store dependency. */
+export interface LocalStorePort<T extends SyncRecord> {
+  get(id: string): Promise<T | undefined>
+  put(record: T): Promise<void>
+  delete(id: string): Promise<void>
+  list(): Promise<T[]>
+  bulkPut(records: T[]): Promise<void>
+}
+
+/** Minimal interface for the drive adapter dependency. */
+export interface DriveAdapterPort {
+  listFiles(name?: string): Promise<Array<{ id: string }>>
+  downloadFile<U>(fileId: string): Promise<U>
+  createFile<U>(name: string, content: U): Promise<{ id: string }>
+  updateFile<U>(fileId: string, content: U): Promise<{ id: string }>
+}
+
 /** Public API returned by createSyncEngine. */
 export interface SyncEngine<T extends SyncRecord> {
   get(id: string): Promise<T | undefined>
@@ -17,6 +34,12 @@ export interface SyncEngine<T extends SyncRecord> {
   destroy(): void
 }
 
+/** Internal options for dependency injection (testing). */
+interface InternalOptions<T extends SyncRecord> {
+  store?: LocalStorePort<T>
+  drive?: DriveAdapterPort
+}
+
 /**
  * Creates a sync engine that orchestrates bidirectional sync between
  * a local IndexedDB store and Google Drive's appDataFolder.
@@ -25,11 +48,12 @@ export interface SyncEngine<T extends SyncRecord> {
  */
 export function createSyncEngine<T extends SyncRecord>(
   config: SyncEngineConfig,
+  _internal?: InternalOptions<T>,
 ): SyncEngine<T> {
   const { storeName, getAccessToken } = config
   const merge: MergeFn<T> = (config.merge as MergeFn<T> | undefined) ?? lwwMerge
-  const store = new LocalStore<T>(`drivestash-${storeName}`, storeName)
-  const drive = new DriveAdapter(getAccessToken)
+  const store: LocalStorePort<T> = _internal?.store ?? new LocalStore<T>(`drivestash-${storeName}`, storeName)
+  const drive: DriveAdapterPort = _internal?.drive ?? new DriveAdapter(getAccessToken)
 
   let status: SyncStatus = 'idle'
   const listeners = new Set<SyncStatusListener>()
