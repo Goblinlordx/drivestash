@@ -1,0 +1,46 @@
+id: remove-dexie_20260322080000Z
+title: Replace Dexie with Raw IndexedDB
+type: refactor
+status: pending
+created: '2026-03-22'
+updated: '2026-03-22'
+spec:
+  summary: Rewrite LocalStore to use raw IndexedDB API, remove dexie peer dependency, achieving zero runtime dependencies.
+  context: Product goal is zero runtime dependencies (tech.deps.zero-runtime). Dexie is currently the only dependency (peer).
+    LocalStore uses only basic CRUD operations that map 1:1 to raw IndexedDB.
+  codebase_analysis: 'LocalStore uses 7 Dexie APIs: constructor, version/stores, table, get, put, delete, toArray, bulkPut,
+    clear. No advanced features (queries, indexes, hooks, live queries). All map directly to raw IndexedDB operations. Tests
+    use fake-indexeddb which implements the IndexedDB spec, so tests will work unchanged.'
+  acceptance_criteria:
+  - LocalStore uses raw IndexedDB API — no Dexie import
+  - 'Public API unchanged: get, put, delete, list, bulkPut, clear'
+  - All 12 existing LocalStore tests pass without modification
+  - dexie removed from peerDependencies in package.json
+  - README updated to remove dexie install instruction
+  out_of_scope: '- Schema migrations beyond version 1
+
+    - Adding new IndexedDB features not currently exposed
+
+    - Changing the public LocalStore API'
+  technical_notes: Replace Dexie wrapper with a thin IDBDatabase wrapper. Open the database with indexedDB.open(), create
+    the object store in onupgradeneeded with keyPath 'id'. Wrap each IDB request in a Promise. bulkPut uses a single readwrite
+    transaction with multiple put calls. The public API (get, put, delete, list, bulkPut, clear) stays identical. Remove dexie
+    from peerDependencies in package.json. Update README to remove dexie install instruction.
+plan:
+- phase: Core Refactor
+  tasks:
+  - text: Rewrite LocalStore to use raw IndexedDB API (open, onupgradeneeded, get, put, delete, getAll, clear)
+    done: false
+  - text: Implement bulkPut using a single readwrite transaction with multiple put calls
+    done: false
+  - text: Verify all 12 existing LocalStore tests pass unchanged
+    done: false
+- phase: Cleanup & Docs
+  tasks:
+  - text: Remove dexie from peerDependencies in package.json and from node_modules
+    done: false
+  - text: Update README install instruction (remove dexie) and any Dexie references in docs
+    done: false
+  - text: Run full test suite and typecheck to verify no regressions
+    done: false
+extra: {}

@@ -1,0 +1,9 @@
+title: Replace Dexie with Raw IndexedDB
+status: pending
+type: refactor
+approved: false
+created: '2026-03-22'
+updated: '2026-03-22'
+spec_refs:
+- action: constrained-by
+  item: tech.deps.zero-runtime
