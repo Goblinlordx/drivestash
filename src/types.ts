@@ -10,6 +10,14 @@ export type SyncStatus = 'idle' | 'syncing' | 'synced' | 'offline' | 'error'
 /** Listener for sync status changes. */
 export type SyncStatusListener = (status: SyncStatus) => void
 
+/** Codec for encoding/decoding sync payloads (e.g., compression). */
+export interface Codec {
+  /** Encode a JSON string into a binary payload. */
+  encode(data: string): Promise<ArrayBuffer>
+  /** Decode a binary payload back into a JSON string. */
+  decode(data: ArrayBuffer): Promise<string>
+}
+
 /** Configuration for the sync engine. */
 export interface SyncEngineConfig {
   /** Name for the local IndexedDB store and the remote Drive file. */
@@ -18,6 +26,8 @@ export interface SyncEngineConfig {
   getAccessToken: () => string | null
   /** Optional: custom merge function. Defaults to LWW per-record merge. */
   merge?: <T extends SyncRecord>(local: T[], remote: T[]) => T[]
+  /** Optional: codec for compressing/encoding the sync payload before upload. */
+  codec?: Codec
 }
 
 /** The document format stored in Google Drive. */

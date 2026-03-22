@@ -14,6 +14,7 @@
 - `src/types.ts` — shared type definitions (SyncRecord, SyncEngineConfig, etc.)
 - `src/local-store.ts` — IndexedDB local store (raw IndexedDB API)
 - `src/drive-adapter.ts` — Google Drive appDataFolder adapter
+- `src/codec.ts` — Browser-native deflate codec (CompressionStream/DecompressionStream)
 
 ## Conventions
 

@@ -1,6 +1,6 @@
 {
   "name": "drivestash",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "Offline-first local/cloud sync engine using Google Drive appDataFolder",
   "type": "module",
   "main": "./dist/index.js",

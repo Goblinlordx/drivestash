@@ -1,4 +1,5 @@
 export type {
+  Codec,
   SyncRecord,
   SyncStatus,
   SyncStatusListener,
@@ -6,6 +7,8 @@ export type {
   SyncDocument,
   DriveFile,
 } from './types'
+
+export { createDeflateCodec } from './codec'
 
 export { LocalStore } from './local-store'
 

@@ -189,7 +189,34 @@ const engine = createSyncEngine<Bookmark>({
 })
 ```
 
-### 7. Cleanup
+### 7. Payload Compression
+
+drivestash supports optional payload compression to reduce upload/download sizes. The built-in codec uses browser-native `CompressionStream`/`DecompressionStream` (DEFLATE) — zero runtime dependencies.
+
+```typescript
+import { createSyncEngine, createDeflateCodec } from 'drivestash'
+
+const engine = createSyncEngine<Bookmark>({
+  storeName: 'bookmarks',
+  getAccessToken: () => myAuth.getToken(),
+  codec: createDeflateCodec(),
+})
+```
+
+JSON + DEFLATE typically achieves 4-5x size reduction, which is significant since drivestash uploads the full document on every push. You can also provide a custom codec by implementing the `Codec` interface:
+
+```typescript
+import type { Codec } from 'drivestash'
+
+const myCodec: Codec = {
+  encode(data: string): Promise<ArrayBuffer> { /* ... */ },
+  decode(data: ArrayBuffer): Promise<string> { /* ... */ },
+}
+```
+
+`CompressionStream` is available in Chrome 80+, Firefox 113+, Safari 16.4+.
+
+### 8. Cleanup
 
 When your component unmounts or the engine is no longer needed:
 
@@ -280,6 +307,7 @@ interface SyncEngineConfig {
   storeName: string                                           // IndexedDB table + Drive file name
   getAccessToken: () => string | null                         // OAuth2 token provider
   merge?: <T extends SyncRecord>(local: T[], remote: T[]) => T[]  // Custom merge (default: lwwMerge)
+  codec?: Codec                                               // Optional payload compression
 }
 
 interface SyncEngine<T extends SyncRecord> {
@@ -350,7 +378,16 @@ interface SyncRecord {
 type SyncStatus = 'idle' | 'syncing' | 'synced' | 'offline' | 'error'
 type SyncStatusListener = (status: SyncStatus) => void
 type TokenProvider = () => string | null
+
+interface Codec {
+  encode(data: string): Promise<ArrayBuffer>
+  decode(data: ArrayBuffer): Promise<string>
+}
 ```
+
+### `createDeflateCodec()`
+
+Creates a codec using browser-native `CompressionStream`/`DecompressionStream` (DEFLATE). Zero dependencies.
 
 ## Publishing
 
