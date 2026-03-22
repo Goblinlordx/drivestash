@@ -1,0 +1,85 @@
+version: 1
+snapshot_date: "2026-03-22"
+snapshot_after_tracks: []
+snapshot_after_ops:
+  - "20260322-init"
+items:
+  product.sync.offline-write:
+    title: "Offline-first local writes"
+    type: product
+    priority: high
+    description: "Write JSON documents to IndexedDB instantly, works without network."
+    status: active
+    added_by: _init
+
+  product.sync.cloud-sync:
+    title: "Google Drive appDataFolder sync"
+    type: product
+    priority: high
+    description: "Sync local documents to Google Drive's hidden appDataFolder with zero quota cost."
+    status: active
+    added_by: _init
+
+  product.sync.conflict-resolution:
+    title: "LWW conflict resolution"
+    type: product
+    priority: high
+    description: "Per-record Last-Write-Wins merge with timestamps for automatic conflict resolution."
+    status: active
+    added_by: _init
+
+  product.sync.auto-triggers:
+    title: "Auto-sync triggers"
+    type: product
+    priority: medium
+    description: "Automatic sync on reconnect, visibility change, and pending queue events."
+    status: active
+    added_by: _init
+
+  product.sync.observable-status:
+    title: "Observable sync status"
+    type: product
+    priority: medium
+    description: "Subscribe to sync state changes for UI feedback."
+    status: active
+    added_by: _init
+
+  product.api.generic-documents:
+    title: "Generic JSON document storage"
+    type: product
+    priority: high
+    description: "Sync any JSON-serializable data, not tied to a specific schema."
+    status: active
+    added_by: _init
+
+  product.auth.pluggable-token:
+    title: "Pluggable auth token provider"
+    type: product
+    priority: high
+    description: "Inject your own Google OAuth token provider instead of built-in auth."
+    status: active
+    added_by: _init
+
+  tech.build.esm-only:
+    title: "ESM-only package output"
+    type: technical
+    priority: high
+    description: "Publish as ESM-only targeting ES2022 browsers."
+    status: active
+    added_by: _init
+
+  tech.deps.zero-runtime:
+    title: "Zero runtime dependencies"
+    type: technical
+    priority: high
+    description: "No runtime dependencies in the published package; Dexie may be a peer dep."
+    status: active
+    added_by: _init
+
+  tech.sync.pluggable-merge:
+    title: "Pluggable merge strategies"
+    type: technical
+    priority: medium
+    description: "Support swappable merge strategies beyond the default LWW."
+    status: active
+    added_by: _init

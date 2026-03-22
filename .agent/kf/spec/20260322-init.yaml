@@ -1,0 +1,54 @@
+description: "Initial product spec from project setup"
+timestamp: "2026-03-22T00:00:00Z"
+author: _init
+operations:
+  - op: add
+    id: product.sync.offline-write
+    title: "Offline-first local writes"
+    type: product
+    priority: high
+  - op: add
+    id: product.sync.cloud-sync
+    title: "Google Drive appDataFolder sync"
+    type: product
+    priority: high
+  - op: add
+    id: product.sync.conflict-resolution
+    title: "LWW conflict resolution"
+    type: product
+    priority: high
+  - op: add
+    id: product.sync.auto-triggers
+    title: "Auto-sync triggers"
+    type: product
+    priority: medium
+  - op: add
+    id: product.sync.observable-status
+    title: "Observable sync status"
+    type: product
+    priority: medium
+  - op: add
+    id: product.api.generic-documents
+    title: "Generic JSON document storage"
+    type: product
+    priority: high
+  - op: add
+    id: product.auth.pluggable-token
+    title: "Pluggable auth token provider"
+    type: product
+    priority: high
+  - op: add
+    id: tech.build.esm-only
+    title: "ESM-only package output"
+    type: technical
+    priority: high
+  - op: add
+    id: tech.deps.zero-runtime
+    title: "Zero runtime dependencies"
+    type: technical
+    priority: high
+  - op: add
+    id: tech.sync.pluggable-merge
+    title: "Pluggable merge strategies"
+    type: technical
+    priority: medium

@@ -1,0 +1,7 @@
+voice_and_tone: "Concise and direct"
+
+design_principles:
+  - Simplicity over features
+  - Offline-first reliability
+  - Zero-infrastructure developer experience
+  - Framework-agnostic core

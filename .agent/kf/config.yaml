@@ -1,3 +1,4 @@
 version: "1.0"
+project_name: drivestash
 primary_branch: main
 tracks_dir: .agent/kf/tracks
