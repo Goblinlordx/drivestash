@@ -354,12 +354,15 @@ type TokenProvider = () => string | null
 
 ## Publishing
 
-Releases are published to npm automatically when a version tag is pushed:
+Releases are published to npm automatically when a GitHub Release is created:
 
 ```bash
 npm version patch   # or minor / major
 git push --follow-tags
+gh release create v0.x.x --generate-notes
 ```
+
+Creating the GitHub Release triggers the publish workflow, which runs tests, builds, and publishes to npm with provenance.
 
 **Setup:** Add an `NPM_TOKEN` repository secret in GitHub (Settings > Secrets > Actions) with a granular access token that has publish permission for the `drivestash` package.
 
