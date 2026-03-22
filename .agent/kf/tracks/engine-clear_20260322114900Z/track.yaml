@@ -1,0 +1,72 @@
+id: engine-clear_20260322114900Z
+title: Add clear() method to SyncEngine
+type: feature
+status: pending
+created: '2026-03-22'
+updated: '2026-03-22'
+spec:
+  summary: >
+    Expose clear() on SyncEngine for user logout/account switch. Delegates
+    to LocalStore.clear(), resets remoteFileId and pending sync state,
+    sets status to idle.
+  context: |
+    When a user logs out, the next user must not see stale data from the
+    previous session. LocalStore.clear() exists internally but is not
+    exposed through the SyncEngine public API. This is critical for
+    multi-user or account-switching scenarios.
+  codebase_analysis: |
+    - LocalStore.clear() exists at src/local-store.ts:72
+    - SyncEngine interface (src/sync-engine.ts:25-35) has no clear()
+    - LocalStorePort interface (src/sync-engine.ts:8-14) has no clear()
+    - Internal state to reset: remoteFileId, syncInProgress, pendingSync
+    - destroy() already clears listeners — clear() should NOT destroy
+      the engine, just wipe data and reset state
+  acceptance_criteria:
+    - clear() added to SyncEngine interface
+    - clear() added to LocalStorePort interface
+    - clear() wipes all local records via LocalStore.clear()
+    - clear() resets remoteFileId to null
+    - clear() sets status to idle
+    - clear() cancels any pending sync (does not interrupt in-progress)
+    - Unit tests cover all above behaviors
+    - README API Reference updated with clear() method
+    - README Integration Guide includes logout/clear usage
+    - CHANGELOG updated with v0.2.0 entry
+  out_of_scope: |
+    - Deleting the remote Drive file (clear is local-only)
+    - drivestash-events integration (separate repo)
+  technical_notes: |
+    clear() should be safe to call at any time. If a sync is in progress,
+    clear() should wait for it to finish (or let it finish and then clear).
+    After clear(), the engine is in a fresh state — next push creates a
+    new remote file.
+plan:
+  - phase: Interface
+    tasks:
+      - text: Add clear() to SyncEngine interface
+        done: false
+      - text: Add clear() to LocalStorePort interface
+        done: false
+  - phase: Implementation
+    tasks:
+      - text: Implement clear() in createSyncEngine
+        done: false
+  - phase: Tests
+    tasks:
+      - text: Test clear wipes all records
+        done: false
+      - text: Test clear resets remoteFileId (next push creates new file)
+        done: false
+      - text: Test clear sets status to idle
+        done: false
+      - text: Test clear while sync in progress
+        done: false
+  - phase: Docs
+    tasks:
+      - text: Add clear() to README API Reference
+        done: false
+      - text: Add clear() to README Integration Guide with logout example
+        done: false
+      - text: Update CHANGELOG with v0.2.0 entry
+        done: false
+extra: {}
