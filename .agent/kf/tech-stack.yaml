@@ -1,0 +1,27 @@
+language: TypeScript
+runtime: Browser (ES2022+)
+module_system: ESM
+build_tool: tsup
+test_framework: vitest
+package_manager: npm
+
+dependencies:
+  production: []  # zero runtime deps is the goal; Dexie may be a peer dep
+  development:
+    - tsup: "^8.4.0"
+    - typescript: "^5.7.0"
+    - vitest: "^3.1.0"
+
+publish:
+  registry: npmjs.com
+  scope: unscoped (drivestash)
+  format: ESM only
+  target: ES2022
+
+ci:
+  platform: GitHub Actions
+  checks:
+    - typecheck
+    - lint
+    - test
+    - build

@@ -1,0 +1,84 @@
+id: gdrive-adapter_20260322120000Z
+title: "Google Drive appDataFolder Adapter"
+type: feature
+status: pending
+created: 2026-03-22
+updated: 2026-03-22
+spec:
+  summary: >
+    Generic Google Drive appDataFolder adapter for listing, reading, creating,
+    and updating JSON documents. Injectable token provider, no built-in auth.
+  context: |
+    The trip-planning app has a working Drive adapter in `webapp/src/lib/gdrive.ts`
+    that handles CRUD operations against the appDataFolder. This track extracts and
+    generalizes that into a standalone module with proper typing, error handling,
+    and no app-specific assumptions.
+
+    Reference implementation: https://github.com/Goblinlordx/trip-planning (webapp/src/lib/gdrive.ts)
+  codebase_analysis: |
+    The existing gdrive.ts (76 lines) uses:
+    - REST fetch against googleapis.com/drive/v3/files and /upload/drive/v3/files
+    - Bearer token auth via a getAccessToken() function
+    - appDataFolder space for zero-quota hidden storage
+    - FormData multipart upload for file creation
+    - JSON media upload for file updates
+    - Simple error throwing on non-OK responses
+
+    Key patterns to preserve:
+    - appDataFolder space parameter
+    - Multipart upload for create (metadata + content)
+    - Media upload for update (content only)
+    - File listing with name query filter
+  acceptance_criteria:
+    - "Exports a DriveAdapter class/factory that accepts a token provider function"
+    - "Supports list, download, create, update, and delete operations on appDataFolder"
+    - "All operations are typed with generics for document content"
+    - "Errors include HTTP status and Drive API error details"
+    - "Zero runtime dependencies (uses native fetch)"
+    - "Unit tests with mocked fetch covering all operations"
+    - "Works in any browser environment with fetch support"
+  out_of_scope: |
+    - OAuth flow / token acquisition (consumer provides token)
+    - Non-appDataFolder Drive operations
+    - Resumable uploads (documents are small JSON)
+    - Batch API operations
+  technical_notes: |
+    Approach: Create a `DriveAdapter` that wraps the Google Drive REST API.
+    The adapter takes a `getAccessToken: () => string | null` function and
+    exposes typed CRUD methods. All methods return Promises.
+
+    File structure:
+    - src/drive-adapter.ts — main adapter
+    - src/drive-adapter.test.ts — tests with fetch mocking
+plan:
+  - phase: "Core Adapter"
+    tasks:
+      - text: "Create DriveAdapter with constructor accepting token provider"
+        done: false
+      - text: "Implement listFiles() — list appDataFolder files with optional name filter"
+        done: false
+      - text: "Implement downloadFile<T>() — download and parse JSON content"
+        done: false
+      - text: "Implement createFile() — multipart upload with metadata + JSON content"
+        done: false
+      - text: "Implement updateFile() — media upload to replace file content"
+        done: false
+      - text: "Implement deleteFile() — delete a file by ID"
+        done: false
+  - phase: "Error Handling & Types"
+    tasks:
+      - text: "Create DriveError class with status, message, and Drive API error details"
+        done: false
+      - text: "Add auth guard — throw clear error when token provider returns null"
+        done: false
+  - phase: "Testing"
+    tasks:
+      - text: "Write unit tests for all CRUD operations with mocked fetch"
+        done: false
+      - text: "Test error scenarios (401, 404, network failure, null token)"
+        done: false
+  - phase: "Export"
+    tasks:
+      - text: "Export DriveAdapter and types from src/index.ts"
+        done: false
+extra: {}

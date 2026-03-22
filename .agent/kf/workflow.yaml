@@ -1,0 +1,13 @@
+branching:
+  primary: main
+  feature: "kf/{trackId}"
+  convention: trunk-based
+
+commits:
+  style: conventional
+  format: "type: description"
+
+tracks:
+  location: .agent/kf/tracks/
+  registry: .agent/kf/tracks.yaml
+  dependencies: .agent/kf/tracks/deps.yaml

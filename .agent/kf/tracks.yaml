@@ -1,0 +1,18 @@
+# Track Registry
+tracks:
+  gdrive-adapter_20260322120000Z:
+    title: "Google Drive appDataFolder Adapter"
+    type: feature
+    status: pending
+  local-store_20260322120001Z:
+    title: "IndexedDB Local Store"
+    type: feature
+    status: pending
+  sync-engine_20260322120002Z:
+    title: "Sync Engine Core"
+    type: feature
+    status: pending
+  publish-pipeline_20260322120003Z:
+    title: "Build & Publish Pipeline"
+    type: chore
+    status: pending

@@ -1,0 +1,24 @@
+# Track Dependency Graph
+#
+# PROTOCOL:
+#   Canonical source for track dependency ordering (adjacency list).
+#   Each key is a track ID; its value is a list of prerequisite track IDs.
+#
+# RULES:
+#   - Only pending/in-progress tracks listed. Completed tracks pruned on cleanup.
+#   - Architect appends entries when creating tracks.
+#   - Developer checks deps before claiming: all deps must be completed.
+#   - Cycles are forbidden.
+#
+# UPDATED: 2026-03-22T12:00:00Z
+
+gdrive-adapter_20260322120000Z: []
+
+local-store_20260322120001Z: []
+
+sync-engine_20260322120002Z:
+  - gdrive-adapter_20260322120000Z
+  - local-store_20260322120001Z
+
+publish-pipeline_20260322120003Z:
+  - sync-engine_20260322120002Z

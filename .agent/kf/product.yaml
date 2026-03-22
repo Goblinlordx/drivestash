@@ -1,0 +1,26 @@
+name: drivestash
+tagline: "Offline-first local/cloud sync engine using Google Drive appDataFolder"
+description: |
+  A lightweight TypeScript library that syncs JSON documents between IndexedDB
+  (local-first) and Google Drive's appDataFolder (zero-quota cloud storage).
+  Provides automatic conflict resolution via Last-Write-Wins merge, observable
+  sync status, and auto-sync triggers for online/offline and visibility changes.
+  Designed to be published as an npm package for use in any web application.
+
+goals:
+  - Provide a simple, generic API for offline-first data sync
+  - Use Google Drive appDataFolder as a zero-cost, user-owned cloud backend
+  - Support pluggable merge strategies (LWW default)
+  - Be framework-agnostic (no React dependency in core)
+  - Publish as a public npm package
+
+target_users:
+  - Web developers building offline-first applications
+  - Developers who want zero-infrastructure cloud sync
+  - PWA builders who need cross-device data sync
+
+non_goals:
+  - Full CRDT implementation
+  - Real-time collaboration (this is async sync)
+  - Server-side usage (browser-only, uses IndexedDB + Drive API)
+  - Built-in authentication (token provider is injected)
