@@ -20,7 +20,7 @@ drivestash has four components:
 
 | Component | Role |
 |-----------|------|
-| **LocalStore** | Wraps IndexedDB via [Dexie](https://dexie.org). Provides typed CRUD (`get`, `put`, `delete`, `list`, `bulkPut`, `clear`). Each store is a separate IndexedDB table keyed by `id`. |
+| **LocalStore** | Wraps IndexedDB directly (zero dependencies). Provides typed CRUD (`get`, `put`, `delete`, `list`, `bulkPut`, `clear`). Each store is a separate IndexedDB table keyed by `id`. |
 | **DriveAdapter** | Talks to the Google Drive v3 API. Reads and writes JSON files in the user's `appDataFolder` space. Requires an OAuth2 access token — no built-in auth flow. |
 | **lwwMerge** | Default merge strategy. For each record ID, keeps whichever version has the latest `updatedAt` timestamp. Records only on one side are included as-is. Pluggable — you can supply your own merge function. |
 | **SyncEngine** | Orchestrates everything. Exposes a simple CRUD + sync API. Manages auto-sync triggers and sync status. Created via `createSyncEngine()`. |
@@ -87,10 +87,10 @@ drivestash does **not** handle the OAuth flow itself. You provide a `getAccessTo
 ## Install
 
 ```bash
-npm install drivestash dexie
+npm install drivestash
 ```
 
-[Dexie](https://dexie.org) is a peer dependency — you must install it alongside drivestash.
+drivestash has **zero runtime dependencies**. It uses the browser's native IndexedDB API directly.
 
 ## Integration Guide
 
