@@ -6,3 +6,5 @@ export type {
   SyncDocument,
   DriveFile,
 } from './types'
+
+export { LocalStore } from './local-store'
