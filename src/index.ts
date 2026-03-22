@@ -8,3 +8,6 @@ export type {
 } from './types'
 
 export { LocalStore } from './local-store'
+
+export { DriveAdapter, DriveError } from './drive-adapter'
+export type { TokenProvider, DriveFileMeta, DriveApiErrorDetail } from './drive-adapter'
