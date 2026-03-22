@@ -38,9 +38,11 @@ export interface SyncEngine<T extends SyncRecord> {
   destroy(): void
 }
 
-/** Internal options for dependency injection (testing). */
-interface InternalOptions<T extends SyncRecord> {
+/** Options for injecting custom storage and drive implementations. */
+export interface SyncEngineOptions<T extends SyncRecord> {
+  /** Custom local store implementation. Defaults to IndexedDB-backed LocalStore. */
   store?: LocalStorePort<T>
+  /** Custom Drive adapter implementation. Defaults to Google Drive appDataFolder adapter. */
   drive?: DriveAdapterPort
 }
 
@@ -49,15 +51,18 @@ interface InternalOptions<T extends SyncRecord> {
  * a local IndexedDB store and Google Drive's appDataFolder.
  *
  * One engine instance manages one document (identified by storeName).
+ *
+ * @param config - Engine configuration (store name, auth, merge strategy, codec).
+ * @param options - Optional dependency injection for custom store/drive implementations.
  */
 export function createSyncEngine<T extends SyncRecord>(
   config: SyncEngineConfig,
-  _internal?: InternalOptions<T>,
+  options?: SyncEngineOptions<T>,
 ): SyncEngine<T> {
   const { storeName, getAccessToken } = config
   const merge: MergeFn<T> = (config.merge as MergeFn<T> | undefined) ?? lwwMerge
-  const store: LocalStorePort<T> = _internal?.store ?? new LocalStore<T>(`drivestash-${storeName}`, storeName)
-  const drive: DriveAdapterPort = _internal?.drive ?? new DriveAdapter(getAccessToken)
+  const store: LocalStorePort<T> = options?.store ?? new LocalStore<T>(`drivestash-${storeName}`, storeName)
+  const drive: DriveAdapterPort = options?.drive ?? new DriveAdapter(getAccessToken)
 
   let status: SyncStatus = 'idle'
   const listeners = new Set<SyncStatusListener>()

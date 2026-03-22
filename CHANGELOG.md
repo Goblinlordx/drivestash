@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.4.0] - 2026-03-22
+
+### Added
+
+- Public dependency injection via `SyncEngineOptions` — inject custom `store` and `drive` implementations for testing or alternative backends
+- Exported `LocalStorePort`, `DriveAdapterPort`, and `SyncEngineOptions` types
+
+### Changed
+
+- `createSyncEngine` second parameter renamed from internal `_internal` to public `options` (same shape, non-breaking for JS consumers)
+
 ## [0.3.0] - 2026-03-22
 
 ### Added

@@ -237,7 +237,34 @@ await engine.clearRemote()
 
 This is a destructive operation — the remote data cannot be recovered. Use this when a user explicitly requests data deletion, not for routine logout.
 
-### 9. Cleanup
+### 9. Custom Storage (Dependency Injection)
+
+`createSyncEngine` accepts an optional second argument for injecting custom storage implementations. This is useful for testing (in-memory mocks) or alternative backends:
+
+```typescript
+import { createSyncEngine } from 'drivestash'
+import type { LocalStorePort, DriveAdapterPort } from 'drivestash'
+
+// In-memory store for testing
+const memoryStore: LocalStorePort<MyRecord> = {
+  _data: new Map(),
+  get(id) { return Promise.resolve(this._data.get(id)) },
+  put(record) { this._data.set(record.id, record); return Promise.resolve() },
+  delete(id) { this._data.delete(id); return Promise.resolve() },
+  list() { return Promise.resolve([...this._data.values()]) },
+  bulkPut(records) { for (const r of records) this._data.set(r.id, r); return Promise.resolve() },
+  clear() { this._data.clear(); return Promise.resolve() },
+}
+
+const engine = createSyncEngine<MyRecord>(
+  { storeName: 'test', getAccessToken: () => 'token' },
+  { store: memoryStore },
+)
+```
+
+Both `store` and `drive` can be injected independently. Omitted fields use the default implementations (IndexedDB for store, Google Drive for drive).
+
+### 10. Cleanup
 
 When your component unmounts or the engine is no longer needed:
 
@@ -319,7 +346,7 @@ Google Drive API has [per-user and per-project quotas](https://developers.google
 
 ## API Reference
 
-### `createSyncEngine<T>(config)`
+### `createSyncEngine<T>(config, options?)`
 
 Creates a sync engine instance. `T` must extend `SyncRecord`.
 
@@ -329,6 +356,11 @@ interface SyncEngineConfig {
   getAccessToken: () => string | null                         // OAuth2 token provider
   merge?: <T extends SyncRecord>(local: T[], remote: T[]) => T[]  // Custom merge (default: lwwMerge)
   codec?: Codec                                               // Optional payload compression
+}
+
+interface SyncEngineOptions<T extends SyncRecord> {
+  store?: LocalStorePort<T>              // Custom local store (default: IndexedDB)
+  drive?: DriveAdapterPort               // Custom drive adapter (default: Google Drive)
 }
 
 interface SyncEngine<T extends SyncRecord> {
