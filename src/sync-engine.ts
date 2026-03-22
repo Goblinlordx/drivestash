@@ -20,6 +20,7 @@ export interface DriveAdapterPort {
   downloadFile<U>(fileId: string): Promise<U>
   createFile<U>(name: string, content: U): Promise<{ id: string }>
   updateFile<U>(fileId: string, content: U): Promise<{ id: string }>
+  deleteFile(fileId: string): Promise<void>
 }
 
 /** Public API returned by createSyncEngine. */
@@ -33,6 +34,7 @@ export interface SyncEngine<T extends SyncRecord> {
   push(): Promise<void>
   onStatusChange(listener: SyncStatusListener): () => void
   clear(): Promise<void>
+  clearRemote(): Promise<void>
   destroy(): void
 }
 
@@ -231,6 +233,17 @@ export function createSyncEngine<T extends SyncRecord>(
     async clear(): Promise<void> {
       pendingSync = false
       await store.clear()
+      remoteFileId = null
+      setStatus('idle')
+    },
+
+    async clearRemote(): Promise<void> {
+      pendingSync = false
+      await store.clear()
+      const fileId = await resolveFileId()
+      if (fileId !== null) {
+        await drive.deleteFile(fileId)
+      }
       remoteFileId = null
       setStatus('idle')
     },

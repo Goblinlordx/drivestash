@@ -227,7 +227,15 @@ async function handleLogout() {
 }
 ```
 
-`clear()` wipes all local records from IndexedDB, resets the cached remote file ID, and sets status to `'idle'`. The engine remains usable — the next `sync()` or `push()` will create a fresh remote file.
+`clear()` wipes all local records from IndexedDB, resets the cached remote file ID, and sets status to `'idle'`. The engine remains usable — the next `sync()` or `push()` will create a fresh remote file. If the same user logs back in and syncs, their data is restored from Drive.
+
+To also delete the remote Drive file (full wipe):
+
+```typescript
+await engine.clearRemote()
+```
+
+This is a destructive operation — the remote data cannot be recovered. Use this when a user explicitly requests data deletion, not for routine logout.
 
 ### 9. Cleanup
 
@@ -333,6 +341,7 @@ interface SyncEngine<T extends SyncRecord> {
   push(): Promise<void>                 // upload local state
   onStatusChange(listener: SyncStatusListener): () => void
   clear(): Promise<void>               // wipe local data and reset state
+  clearRemote(): Promise<void>         // wipe local + delete remote Drive file
   destroy(): void                       // cleanup event listeners
 }
 ```

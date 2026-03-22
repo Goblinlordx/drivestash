@@ -44,6 +44,7 @@ function createMockDrive(): DriveAdapterPort & {
   downloadFile: ReturnType<typeof vi.fn>
   createFile: ReturnType<typeof vi.fn>
   updateFile: ReturnType<typeof vi.fn>
+  deleteFile: ReturnType<typeof vi.fn>
 } {
   const mock: ReturnType<typeof createMockDrive> = {
     _remoteDoc: null,
@@ -63,6 +64,13 @@ function createMockDrive(): DriveAdapterPort & {
     updateFile: vi.fn((_id: string, doc: SyncDocument<TestRecord>) => {
       mock._remoteDoc = doc
       return Promise.resolve({ id: mock._fileId! })
+    }),
+    deleteFile: vi.fn((id: string) => {
+      if (mock._fileId === id) {
+        mock._remoteDoc = null
+        mock._fileId = null
+      }
+      return Promise.resolve()
     }),
   }
   return mock
@@ -348,6 +356,38 @@ describe('SyncEngine', () => {
 
       // Store should have been cleared (no records from the pending push)
       expect(mockStore.clear).toHaveBeenCalled()
+    })
+  })
+
+  describe('clearRemote', () => {
+    it('wipes local records and deletes remote file', async () => {
+      await engine.put(rec('1', 'a'))
+      await engine.push()
+      expect(mockDrive._fileId).toBe('new-file-id')
+
+      await engine.clearRemote()
+
+      expect(mockStore.clear).toHaveBeenCalled()
+      expect(mockDrive.deleteFile).toHaveBeenCalledWith('new-file-id')
+      expect(mockDrive._remoteDoc).toBeNull()
+      expect(mockDrive._fileId).toBeNull()
+    })
+
+    it('handles no remote file gracefully', async () => {
+      await engine.clearRemote()
+
+      expect(mockDrive.deleteFile).not.toHaveBeenCalled()
+      expect(mockStore.clear).toHaveBeenCalled()
+    })
+
+    it('sets status to idle after clearing', async () => {
+      await engine.sync()
+      const statuses: SyncStatus[] = []
+      engine.onStatusChange((s) => statuses.push(s))
+
+      await engine.clearRemote()
+
+      expect(statuses).toContain('idle')
     })
   })
 

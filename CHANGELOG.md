@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3.0] - 2026-03-22
+
+### Added
+
+- `clearRemote()` method on `SyncEngine` — wipes local records AND deletes the remote Drive file. For full data deletion requests.
+
 ## [0.2.0] - 2026-03-22
 
 ### Added
