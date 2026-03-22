@@ -1,84 +1,109 @@
 id: local-store_20260322120001Z
-title: "IndexedDB Local Store"
+title: IndexedDB Local Store
 type: feature
 status: pending
 created: 2026-03-22
-updated: 2026-03-22
+updated: '2026-03-22'
 spec:
-  summary: >
-    Generic IndexedDB-backed local store for SyncRecord types. Provides typed
-    CRUD operations with configurable store names. Uses Dexie as a peer dependency.
-  context: |
-    The trip-planning app uses Dexie.js to manage a single IndexedDB table for stamps.
+  summary: 'Generic IndexedDB-backed local store for SyncRecord types. Provides typed CRUD operations with configurable store
+    names. Uses Dexie as a peer dependency.
+
+    '
+  context: 'The trip-planning app uses Dexie.js to manage a single IndexedDB table for stamps.
+
     This track generalizes that into a reusable local store that can hold any record type
+
     conforming to the SyncRecord interface (id + updatedAt).
 
+
     Reference: https://github.com/Goblinlordx/trip-planning (webapp/src/lib/db.ts)
-  codebase_analysis: |
-    The existing db.ts (17 lines) is minimal:
+
+    '
+  codebase_analysis: 'The existing db.ts (17 lines) is minimal:
+
     - Creates a Dexie instance with a single table
-    - Schema: one table with 'itemId' as primary key
+
+    - Schema: one table with ''itemId'' as primary key
+
     - StampRecord has itemId and stampedAt fields
 
+
     For the generic version:
-    - Primary key should be 'id' (matching SyncRecord interface)
+
+    - Primary key should be ''id'' (matching SyncRecord interface)
+
     - Store name should be configurable
+
     - Should support multiple stores per database
+
     - Dexie should be a peer dependency to avoid version conflicts
+
+    '
   acceptance_criteria:
-    - "Exports a LocalStore class/factory that creates an IndexedDB store via Dexie"
-    - "Configurable database name and store name"
-    - "Typed CRUD: get(id), put(record), delete(id), list(), clear()"
-    - "Supports any record type extending SyncRecord"
-    - "Dexie is a peer dependency, not bundled"
-    - "Unit tests covering all operations"
-    - "bulkPut() for efficient batch writes during sync"
-  out_of_scope: |
-    - Schema migrations beyond the initial version
+  - Exports a LocalStore class/factory that creates an IndexedDB store via Dexie
+  - Configurable database name and store name
+  - 'Typed CRUD: get(id), put(record), delete(id), list(), clear()'
+  - Supports any record type extending SyncRecord
+  - Dexie is a peer dependency, not bundled
+  - Unit tests covering all operations
+  - bulkPut() for efficient batch writes during sync
+  out_of_scope: '- Schema migrations beyond the initial version
+
     - Indexing on fields other than id
+
     - Query/filter capabilities (just CRUD + list)
+
     - Non-Dexie IndexedDB implementations
-  technical_notes: |
-    Approach: Create a `LocalStore<T extends SyncRecord>` class that wraps Dexie.
+
+    '
+  technical_notes: 'Approach: Create a `LocalStore<T extends SyncRecord>` class that wraps Dexie.
+
     The constructor takes a database name and store name. Internally creates a Dexie
-    instance with a single table using 'id' as the primary key.
+
+    instance with a single table using ''id'' as the primary key.
+
 
     Dexie will be a peer dependency — consumers must install it themselves.
 
+
     File structure:
+
     - src/local-store.ts — main store implementation
+
     - src/local-store.test.ts — tests (using fake-indexeddb for Node testing)
+
+    '
 plan:
-  - phase: "Core Store"
-    tasks:
-      - text: "Create LocalStore<T> class with constructor(dbName, storeName)"
-        done: false
-      - text: "Implement get(id) — retrieve single record"
-        done: false
-      - text: "Implement put(record) — upsert single record"
-        done: false
-      - text: "Implement delete(id) — remove single record"
-        done: false
-      - text: "Implement list() — return all records"
-        done: false
-      - text: "Implement bulkPut(records) — batch upsert for sync merges"
-        done: false
-      - text: "Implement clear() — remove all records"
-        done: false
-  - phase: "Package Config"
-    tasks:
-      - text: "Add dexie as peerDependency in package.json"
-        done: false
-      - text: "Add fake-indexeddb as devDependency for testing"
-        done: false
-  - phase: "Testing"
-    tasks:
-      - text: "Write unit tests for all CRUD operations using fake-indexeddb"
-        done: false
-      - text: "Test type safety — verify generic type parameter works correctly"
-        done: false
-  - phase: "Export"
-    tasks:
-      - text: "Export LocalStore and types from src/index.ts"
-        done: false
+- phase: Core Store
+  tasks:
+  - text: Create LocalStore<T> class with constructor(dbName, storeName)
+    done: true
+  - text: Implement get(id) — retrieve single record
+    done: true
+  - text: Implement put(record) — upsert single record
+    done: true
+  - text: Implement delete(id) — remove single record
+    done: true
+  - text: Implement list() — return all records
+    done: true
+  - text: Implement bulkPut(records) — batch upsert for sync merges
+    done: true
+  - text: Implement clear() — remove all records
+    done: true
+- phase: Package Config
+  tasks:
+  - text: Add dexie as peerDependency in package.json
+    done: true
+  - text: Add fake-indexeddb as devDependency for testing
+    done: true
+- phase: Testing
+  tasks:
+  - text: Write unit tests for all CRUD operations using fake-indexeddb
+    done: true
+  - text: Test type safety — verify generic type parameter works correctly
+    done: true
+- phase: Export
+  tasks:
+  - text: Export LocalStore and types from src/index.ts
+    done: true
 extra: {}
