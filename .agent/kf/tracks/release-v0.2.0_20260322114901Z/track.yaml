@@ -5,30 +5,33 @@ status: pending
 created: '2026-03-22'
 updated: '2026-03-22'
 spec:
-  summary: >
-    Bump version to 0.2.0, verify, push, and create GitHub Release
-    to trigger OIDC publish workflow.
+  summary: 'Bump version to 0.2.0, verify, push, and create GitHub Release to trigger OIDC publish workflow.
+
+    '
   acceptance_criteria:
-    - package.json version bumped to 0.2.0
-    - All tests pass, typecheck clean, build succeeds
-    - Changes pushed to origin/main
-    - GitHub Release created via gh CLI (triggers OIDC publish)
-  out_of_scope: |
-    - Manual npm publish (handled by GitHub Actions OIDC workflow)
-  technical_notes: |
-    Uses existing OIDC trusted publisher workflow. Release trigger
+  - package.json version bumped to 0.2.0
+  - All tests pass, typecheck clean, build succeeds
+  - Changes pushed to origin/main
+  - GitHub Release created via gh CLI (triggers OIDC publish)
+  out_of_scope: '- Manual npm publish (handled by GitHub Actions OIDC workflow)
+
+    '
+  technical_notes: 'Uses existing OIDC trusted publisher workflow. Release trigger
+
     is "release: [published]" — create via gh release create.
+
+    '
 plan:
-  - phase: Version
-    tasks:
-      - text: Bump package.json to 0.2.0
-        done: false
-  - phase: Release
-    tasks:
-      - text: Run full verification (typecheck + test + build)
-        done: false
-      - text: Push to origin main
-        done: false
-      - text: Create GitHub Release v0.2.0 with release notes
-        done: false
+- phase: Version
+  tasks:
+  - text: Bump package.json to 0.2.0
+    done: true
+- phase: Release
+  tasks:
+  - text: Run full verification (typecheck + test + build)
+    done: true
+  - text: Push to origin main
+    done: true
+  - text: Create GitHub Release v0.2.0 with release notes
+    done: true
 extra: {}
