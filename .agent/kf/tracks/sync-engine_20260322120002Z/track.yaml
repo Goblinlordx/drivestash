@@ -1,125 +1,163 @@
 id: sync-engine_20260322120002Z
-title: "Sync Engine Core"
+title: Sync Engine Core
 type: feature
 status: pending
 created: 2026-03-22
-updated: 2026-03-22
+updated: '2026-03-22'
 spec:
-  summary: >
-    Core sync engine that orchestrates bidirectional sync between LocalStore and
-    DriveAdapter. Provides createSyncEngine() factory, LWW merge, observable sync
-    status, and auto-sync triggers.
-  context: |
-    The trip-planning app's sync-manager.ts (184 lines) handles the full sync lifecycle:
+  summary: 'Core sync engine that orchestrates bidirectional sync between LocalStore and DriveAdapter. Provides createSyncEngine()
+    factory, LWW merge, observable sync status, and auto-sync triggers.
+
+    '
+  context: 'The trip-planning app''s sync-manager.ts (184 lines) handles the full sync lifecycle:
+
     pull, merge, push, status tracking, and auto-triggers. This track extracts and
+
     generalizes that into the main public API of the drivestash package.
 
+
     Reference: https://github.com/Goblinlordx/trip-planning (webapp/src/lib/sync-manager.ts)
-  codebase_analysis: |
-    The existing sync-manager.ts implements:
+
+    '
+  codebase_analysis: 'The existing sync-manager.ts implements:
+
     - LWW merge: per-record, compare timestamps, keep newest
+
     - resolveFileId(): lazy lookup of remote file by name
+
     - pullStamps(): download remote → merge with local → write to IndexedDB
+
     - pushStamps(): read local → upload to Drive (create or update)
+
     - fullSync(): pull then push
+
     - Status observable: idle/syncing/synced/offline/error with listener set
+
     - Online/offline listener: flush pending on reconnect
+
     - Visibility listener: fullSync when tab becomes visible
+
     - Pending sync queue: coalesce rapid writes into single push
+
     - syncInProgress guard: prevent concurrent syncs
 
+
     Key patterns to preserve:
+
     - Optimistic local-first (write local, async push)
+
     - Coalesced pending sync (multiple writes → single push)
+
     - Auto-sync on visibility change (multi-device awareness)
+
     - Status observable pattern
+
+    '
   acceptance_criteria:
-    - "Exports createSyncEngine<T>(config) factory returning a SyncEngine instance"
-    - "SyncEngine.put(record) writes locally and triggers async push"
-    - "SyncEngine.get(id) reads from local store"
-    - "SyncEngine.delete(id) removes locally and triggers async push"
-    - "SyncEngine.list() returns all local records"
-    - "SyncEngine.sync() performs full bidirectional sync (pull + merge + push)"
-    - "SyncEngine.pull() pulls remote and merges into local"
-    - "SyncEngine.push() pushes local to remote"
-    - "Default LWW merge strategy, configurable via config.merge"
-    - "Observable sync status (idle/syncing/synced/offline/error)"
-    - "Auto-sync on online/offline transition"
-    - "Auto-sync on document visibility change"
-    - "Pending sync coalescing (rapid writes → single push)"
-    - "Concurrent sync guard (no overlapping syncs)"
-    - "SyncEngine.destroy() cleans up listeners and state"
-    - "Unit tests for merge logic, sync orchestration, and status transitions"
-  out_of_scope: |
-    - React hooks or framework bindings (separate package concern)
+  - Exports createSyncEngine<T>(config) factory returning a SyncEngine instance
+  - SyncEngine.put(record) writes locally and triggers async push
+  - SyncEngine.get(id) reads from local store
+  - SyncEngine.delete(id) removes locally and triggers async push
+  - SyncEngine.list() returns all local records
+  - SyncEngine.sync() performs full bidirectional sync (pull + merge + push)
+  - SyncEngine.pull() pulls remote and merges into local
+  - SyncEngine.push() pushes local to remote
+  - Default LWW merge strategy, configurable via config.merge
+  - Observable sync status (idle/syncing/synced/offline/error)
+  - Auto-sync on online/offline transition
+  - Auto-sync on document visibility change
+  - Pending sync coalescing (rapid writes → single push)
+  - Concurrent sync guard (no overlapping syncs)
+  - SyncEngine.destroy() cleans up listeners and state
+  - Unit tests for merge logic, sync orchestration, and status transitions
+  out_of_scope: '- React hooks or framework bindings (separate package concern)
+
     - Retry with exponential backoff (v2 feature)
+
     - Compression or chunking
+
     - Multi-file sync (one engine = one document)
-  technical_notes: |
-    Approach: createSyncEngine<T extends SyncRecord>(config) instantiates a
+
+    '
+  technical_notes: 'Approach: createSyncEngine<T extends SyncRecord>(config) instantiates a
+
     LocalStore and DriveAdapter internally, wires up the sync logic, and returns
+
     a clean public API object.
 
+
     The merge function signature: (local: T[], remote: T[]) => T[]
+
     Default implementation: LWW per-record using updatedAt field.
 
+
     Sync flow:
+
     1. pull: download remote → merge(local, remote) → bulkPut merged to local
+
     2. push: list local → upload to remote (create or update)
+
     3. sync: pull() then push()
 
+
     File structure:
+
     - src/merge.ts — LWW merge + merge type
+
     - src/sync-engine.ts — main engine factory
+
     - src/sync-engine.test.ts — tests
+
     - src/merge.test.ts — merge tests
+
+    '
 plan:
-  - phase: "Merge Strategy"
-    tasks:
-      - text: "Create src/merge.ts with lwwMerge<T>(local, remote) default implementation"
-        done: false
-      - text: "Export MergeFn<T> type for custom merge strategies"
-        done: false
-      - text: "Write merge tests covering: local wins, remote wins, new records from both sides, empty arrays"
-        done: false
-  - phase: "Engine Core"
-    tasks:
-      - text: "Create createSyncEngine<T>(config) factory in src/sync-engine.ts"
-        done: false
-      - text: "Implement local CRUD: get, put, delete, list (delegate to LocalStore)"
-        done: false
-      - text: "Implement pull() — download remote, merge, write to local"
-        done: false
-      - text: "Implement push() — read local, upload to remote"
-        done: false
-      - text: "Implement sync() — pull then push"
-        done: false
-      - text: "Add syncInProgress guard to prevent concurrent syncs"
-        done: false
-      - text: "Add pending sync coalescing — queue push during active sync"
-        done: false
-  - phase: "Status & Listeners"
-    tasks:
-      - text: "Implement sync status observable (onStatusChange callback)"
-        done: false
-      - text: "Add online/offline auto-sync listener"
-        done: false
-      - text: "Add visibility change auto-sync listener"
-        done: false
-      - text: "Implement destroy() to clean up all listeners and state"
-        done: false
-  - phase: "Testing"
-    tasks:
-      - text: "Test sync orchestration: pull, push, full sync sequence"
-        done: false
-      - text: "Test status transitions through sync lifecycle"
-        done: false
-      - text: "Test concurrent sync guard and pending coalescing"
-        done: false
-      - text: "Test auto-sync triggers (online/offline, visibility)"
-        done: false
-  - phase: "Export"
-    tasks:
-      - text: "Export createSyncEngine, SyncEngine type, MergeFn, lwwMerge from src/index.ts"
-        done: false
+- phase: Merge Strategy
+  tasks:
+  - text: Create src/merge.ts with lwwMerge<T>(local, remote) default implementation
+    done: true
+  - text: Export MergeFn<T> type for custom merge strategies
+    done: true
+  - text: 'Write merge tests covering: local wins, remote wins, new records from both sides, empty arrays'
+    done: true
+- phase: Engine Core
+  tasks:
+  - text: Create createSyncEngine<T>(config) factory in src/sync-engine.ts
+    done: true
+  - text: 'Implement local CRUD: get, put, delete, list (delegate to LocalStore)'
+    done: true
+  - text: Implement pull() — download remote, merge, write to local
+    done: true
+  - text: Implement push() — read local, upload to remote
+    done: true
+  - text: Implement sync() — pull then push
+    done: true
+  - text: Add syncInProgress guard to prevent concurrent syncs
+    done: true
+  - text: Add pending sync coalescing — queue push during active sync
+    done: true
+- phase: Status & Listeners
+  tasks:
+  - text: Implement sync status observable (onStatusChange callback)
+    done: true
+  - text: Add online/offline auto-sync listener
+    done: true
+  - text: Add visibility change auto-sync listener
+    done: true
+  - text: Implement destroy() to clean up all listeners and state
+    done: true
+- phase: Testing
+  tasks:
+  - text: 'Test sync orchestration: pull, push, full sync sequence'
+    done: true
+  - text: Test status transitions through sync lifecycle
+    done: true
+  - text: Test concurrent sync guard and pending coalescing
+    done: true
+  - text: Test auto-sync triggers (online/offline, visibility)
+    done: true
+- phase: Export
+  tasks:
+  - text: Export createSyncEngine, SyncEngine type, MergeFn, lwwMerge from src/index.ts
+    done: true
 extra: {}
