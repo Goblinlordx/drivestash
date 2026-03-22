@@ -38,25 +38,27 @@ plan:
 - phase: Architecture Docs
   tasks:
   - text: 'Write How It Works section: component overview (LocalStore, DriveAdapter, SyncEngine, lwwMerge)'
-    done: false
+    done: true
   - text: 'Document sync flow: pull → merge → push sequence with text diagram'
-    done: false
-  - text: 'Document auto-sync triggers (online/offline/visibilitychange) and status lifecycle (idle → syncing → synced/error/offline)'
-    done: false
+    done: true
+  - text: Document auto-sync triggers (online/offline/visibilitychange) and status lifecycle (idle → syncing → synced/error/offline)
+    done: true
 - phase: Integration Guide
   tasks:
   - text: 'Write Prerequisites section: Google Cloud project setup (OAuth consent screen, Drive API enabled, OAuth2 credentials)'
-    done: false
-  - text: 'Write Integration Guide: install, define record types extending SyncRecord, create engine, CRUD operations, observe status, destroy cleanup'
-    done: false
-  - text: 'Fix quick-start example to match actual API (engine.put(record) not engine.put(id, record))'
-    done: false
+    done: true
+  - text: 'Write Integration Guide: install, define record types extending SyncRecord, create engine, CRUD operations, observe
+      status, destroy cleanup'
+    done: true
+  - text: Fix quick-start example to match actual API (engine.put(record) not engine.put(id, record))
+    done: true
 - phase: Fit Analysis & Reference
   tasks:
-  - text: 'Write Good Fit / Not a Good Fit sections with concrete use-case examples'
-    done: false
-  - text: 'Write Risks & Limitations section: no tombstones (deleted records reappear), single-blob scaling, no concurrent-push protection (last push wins), Google API quotas, appDataFolder is per-app-per-user'
-    done: false
-  - text: 'Write API Reference section with exported types and function signatures'
-    done: false
+  - text: Write Good Fit / Not a Good Fit sections with concrete use-case examples
+    done: true
+  - text: 'Write Risks & Limitations section: no tombstones (deleted records reappear), single-blob scaling, no concurrent-push
+      protection (last push wins), Google API quotas, appDataFolder is per-app-per-user'
+    done: true
+  - text: Write API Reference section with exported types and function signatures
+    done: true
 extra: {}
