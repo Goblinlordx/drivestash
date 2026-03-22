@@ -216,7 +216,20 @@ const myCodec: Codec = {
 
 `CompressionStream` is available in Chrome 80+, Firefox 113+, Safari 16.4+.
 
-### 8. Cleanup
+### 8. Clearing Data on Logout
+
+When a user logs out or switches accounts, clear all local state so the next user doesn't see stale data:
+
+```typescript
+async function handleLogout() {
+  await engine.clear()
+  // Now safe to sign in as a different user
+}
+```
+
+`clear()` wipes all local records from IndexedDB, resets the cached remote file ID, and sets status to `'idle'`. The engine remains usable — the next `sync()` or `push()` will create a fresh remote file.
+
+### 9. Cleanup
 
 When your component unmounts or the engine is no longer needed:
 
@@ -319,6 +332,7 @@ interface SyncEngine<T extends SyncRecord> {
   pull(): Promise<void>                 // download & merge remote
   push(): Promise<void>                 // upload local state
   onStatusChange(listener: SyncStatusListener): () => void
+  clear(): Promise<void>               // wipe local data and reset state
   destroy(): void                       // cleanup event listeners
 }
 ```
