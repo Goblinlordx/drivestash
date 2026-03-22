@@ -11,6 +11,7 @@ export interface LocalStorePort<T extends SyncRecord> {
   delete(id: string): Promise<void>
   list(): Promise<T[]>
   bulkPut(records: T[]): Promise<void>
+  clear(): Promise<void>
 }
 
 /** Minimal interface for the drive adapter dependency. */
@@ -31,6 +32,7 @@ export interface SyncEngine<T extends SyncRecord> {
   pull(): Promise<void>
   push(): Promise<void>
   onStatusChange(listener: SyncStatusListener): () => void
+  clear(): Promise<void>
   destroy(): void
 }
 
@@ -224,6 +226,13 @@ export function createSyncEngine<T extends SyncRecord>(
       return () => {
         listeners.delete(listener)
       }
+    },
+
+    async clear(): Promise<void> {
+      pendingSync = false
+      await store.clear()
+      remoteFileId = null
+      setStatus('idle')
     },
 
     destroy(): void {
