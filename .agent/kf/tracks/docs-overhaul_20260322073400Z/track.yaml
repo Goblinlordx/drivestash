@@ -1,0 +1,62 @@
+id: docs-overhaul_20260322073400Z
+title: Comprehensive Documentation Overhaul
+type: chore
+status: pending
+created: '2026-03-22'
+updated: '2026-03-22'
+spec:
+  summary: Replace minimal README with thorough docs covering architecture, integration guide, use-case fit analysis, and
+    risk/limitation disclosure.
+  context: The current README.md is a placeholder with a minimal quick-start example. Users need comprehensive documentation
+    to understand how the library works, how to integrate it, what it's suited for, and what the real risks and limitations
+    are. The library is feature-complete (LocalStore, DriveAdapter, SyncEngine, LWW merge) and published via CI — documentation
+    is the remaining gap.
+  codebase_analysis: 'Exports: createSyncEngine, LocalStore, DriveAdapter, DriveError, lwwMerge, plus types (SyncRecord, SyncEngine,
+    SyncStatus, SyncEngineConfig, SyncDocument, DriveFile, MergeFn, TokenProvider). Sync flow: pull (download remote JSON
+    → LWW merge with local → bulkPut) then push (list local → wrap in SyncDocument → create/update Drive file). Auto-sync
+    on online/offline/visibilitychange events. Key limitations to document: (1) no tombstone support — deleted records reappear
+    on pull, (2) single JSON blob per store — grows unbounded, (3) no etag/version checking on push — last writer wins silently,
+    (4) Dexie is a peer dependency.'
+  acceptance_criteria:
+  - How It Works section explaining architecture (LocalStore, DriveAdapter, SyncEngine, merge) and sync flow
+  - Integration guide with Google Cloud setup, install, engine creation, typed records, CRUD, status observation, and cleanup
+  - Good Fit section listing ideal use cases (small datasets, bookmarks, settings, stamps, event logs)
+  - Bad Fit section listing poor use cases (large datasets, high-frequency writes, multi-user, binary data)
+  - 'Risks & Limitations section covering: deletion semantics (no tombstones), single-blob scaling, no concurrent-push protection,
+    Google API quotas, appDataFolder scope'
+  - API Reference section with exported types and function signatures
+  - Quick-start example corrected to match actual API signatures
+  out_of_scope: '- Generating a separate docs site (Docusaurus, VitePress, etc.)
+
+    - API reference auto-generation from TSDoc
+
+    - Changelog or migration guide (v0.0.1, no prior versions)'
+  technical_notes: All documentation lives in README.md. Use text-based diagrams (no image dependencies). Keep the existing
+    Publishing section. The quick-start example needs correction — current example uses engine.put(id, record) but the actual
+    API is engine.put(record) where record includes its own id field.
+plan:
+- phase: Architecture Docs
+  tasks:
+  - text: 'Write How It Works section: component overview (LocalStore, DriveAdapter, SyncEngine, lwwMerge)'
+    done: false
+  - text: 'Document sync flow: pull → merge → push sequence with text diagram'
+    done: false
+  - text: 'Document auto-sync triggers (online/offline/visibilitychange) and status lifecycle (idle → syncing → synced/error/offline)'
+    done: false
+- phase: Integration Guide
+  tasks:
+  - text: 'Write Prerequisites section: Google Cloud project setup (OAuth consent screen, Drive API enabled, OAuth2 credentials)'
+    done: false
+  - text: 'Write Integration Guide: install, define record types extending SyncRecord, create engine, CRUD operations, observe status, destroy cleanup'
+    done: false
+  - text: 'Fix quick-start example to match actual API (engine.put(record) not engine.put(id, record))'
+    done: false
+- phase: Fit Analysis & Reference
+  tasks:
+  - text: 'Write Good Fit / Not a Good Fit sections with concrete use-case examples'
+    done: false
+  - text: 'Write Risks & Limitations section: no tombstones (deleted records reappear), single-blob scaling, no concurrent-push protection (last push wins), Google API quotas, appDataFolder is per-app-per-user'
+    done: false
+  - text: 'Write API Reference section with exported types and function signatures'
+    done: false
+extra: {}
