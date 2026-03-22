@@ -40,6 +40,17 @@ await engine.sync()
 const item = await engine.get('item-1')
 ```
 
+## Publishing
+
+Releases are published to npm automatically when a version tag is pushed:
+
+```bash
+npm version patch   # or minor / major
+git push --follow-tags
+```
+
+**Setup:** Add an `NPM_TOKEN` repository secret in GitHub (Settings > Secrets > Actions) with a granular access token that has publish permission for the `drivestash` package.
+
 ## License
 
 MIT
